@@ -26,6 +26,8 @@ namespace Windows.UI.Xaml.Controls
 	[TemplatePart(Name = SecondaryItemsControl, Type = typeof(ItemsControl))]
 	public partial class CommandBar : AppBar
 	{
+		private static DependencyProperty NavigationCommandProperty = Uno.UI.ToolkitHelper.GetProperty("Uno.UI.Toolkit.CommandBarExtensions", "NavigationCommand");
+
 		private const string MoreButton = "MoreButton";
 		private const string OverflowPopup = "OverflowPopup";
 		private const string PrimaryItemsControl = "PrimaryItemsControl";
@@ -340,5 +342,23 @@ namespace Windows.UI.Xaml.Controls
 
 			VisualStateManager.GoToState(this, availableCommandsState, true);
 		}
+
+#if __IOS__ || __ANDROID__
+		internal override void UpdateThemeBindings()
+		{
+			base.UpdateThemeBindings();
+
+			// these commands are not part of visual tree, so we need to propagate it manually
+			var commands = new[] { PrimaryCommands, SecondaryCommands }
+				.Where(x => x != null)
+				.SelectMany(x => x)
+				.OfType<AppBarButton>()
+				.Prepend(this.GetValue(NavigationCommandProperty) as AppBarButton);
+			foreach (var command in commands)
+			{
+				command?.UpdateThemeBindings();
+			}
+		}
+#endif
 	}
 }
