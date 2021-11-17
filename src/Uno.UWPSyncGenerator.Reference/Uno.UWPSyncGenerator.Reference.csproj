@@ -187,10 +187,15 @@
 		</ItemGroup>
   </Target>
 
+	<ItemGroup Condition="'$(PkgMicrosoft_WindowsAppSDK)'!=''">
+		<Reference Include="$(PkgMicrosoft_WindowsAppSDK)\lib\uap10.0\*.winmd" />
+	</ItemGroup>
+
 	<Target Name="IncludeUap" BeforeTargets="BeforeBuild">
 		<!--
 		Manually include UAP files that are excluded from the build by the
 		default nuget resolution, which uses `uap10.0.xxx` and ignores `uap10.0`.
+		This target is needed in case the restore happens during the build.
 		-->
 		<ItemGroup>
 			<Reference Include="$(PkgMicrosoft_WindowsAppSDK)\lib\uap10.0\*.winmd" />
