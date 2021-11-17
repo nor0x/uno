@@ -131,6 +131,9 @@
 	</ItemGroup>
 	<Choose>
 		<When Condition="'$(UNO_UWP_BUILD)'=='false'">
+			<PropertyGroup>
+				<UseWinUI>true</UseWinUI>
+			</PropertyGroup>
 			<ItemGroup>
 				<PackageReference Include="Microsoft.WindowsAppSDK">
 					<Version>1.0.0</Version>
@@ -183,5 +186,16 @@
 			<ReferenceCopyLocalPaths Remove="@(_itemToRemove)"/>
 		</ItemGroup>
   </Target>
+
+	<Target Name="IncludeUap" BeforeTargets="BeforeBuild">
+		<!--
+		Manually include UAP files that are excluded from the build by the
+		default nuget resolution, which uses `uap10.0.xxx` and ignores `uap10.0`.
+		-->
+		<ItemGroup>
+			<Reference Include="$(PkgMicrosoft_WindowsAppSDK)\lib\uap10.0\*.winmd" />
+		</ItemGroup>
+	</Target>
+	
 	<Import Project="..\Common.targets" />
 </Project>
